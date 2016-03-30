@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Twaddle Chat © avezhenya</title>
+    <link rel="stylesheet" href="{{ static_url('css/chat.css') }}" type="text/css"/>
+    <link rel="stylesheet" href="{{ static_url('css/emoji.css') }}" type="text/css"/>
+</head>
+<body>
+<div class="chat-iframe-inner">
+    <div class="chat-scroll">
+        <ul id="chat-lines">
+            {% for message in messages %}
+                {% if message["user"] == "system" %}
+                    {% include "system_message.html" %}
+                {% else %}
+                    {% include "message.html" %}
+                {% end %}
+            {% end %}
+        </ul>
+    </div>
+</div>
+<form action="/a/message/new" method="post" id="messageform"
+      class="comment-form">
+        <textarea
+                placeholder="Строка должна вмещать в себя 200 симоволов до скрытия и быть в 3 строки"
+                class="comment-textarea form-text" id="message" maxlength="200"
+                name="body"></textarea>
+
+    <div class="comment-bottom">
+        <button class="form-submit">{{ _('Post') }}</button>
+        <span class="online"></span>
+        <a href="#" class="btn-stop stop-link"></a>
+        <a href="#" class="smile-link"></a>
+        <a href="#" class="settings-link"></a>
+    </div>
+
+    <input type="hidden" name="next" value="{{ request.path }}"/>
+    <input type="hidden" name="user" value="@{{ user }}"/>
+    {% module xsrf_form_html() %}
+</form>
+<div class="handlerWrap"></div>
+<div class="smile-list-wrap">
+    <ul class="smile-list">
+        <li><span class="emoji emoji-ball" onclick="addSmile(':ball:')"></span></li>
+        <li><span class="emoji emoji-smile" onclick="addSmile(':-)')"></span></li>
+        <li><span class="emoji emoji-tongue" onclick="addSmile(':P')"></span></li>
+        <li><span class="emoji emoji-wink" onclick="addSmile(';)')"></span></li>
+        <li><span class="emoji emoji-love" onclick="addSmile(':love:')"></span></li>
+        <li><span class="emoji emoji-dude" onclick="addSmile(':dude:')"></span></li>
+        <li><span class="emoji emoji-smile81" onclick="addSmile(':|')"></span></li>
+        <li><span class="emoji emoji-smile83" onclick="addSmile(':-/')"></span></li>
+        <li><span class="emoji emoji-angry" onclick="addSmile(':angry:')"></span></li>
+        <li><span class="emoji emoji-cry" onclick="addSmile(':cry:')"></span></li>
+        <li><span class="emoji emoji-TT" onclick="addSmile('T_T')"></span></li>
+        <li><span class="emoji emoji-surprise" onclick="addSmile(':surprise:')"></span></li>
+        <li><span class="emoji emoji-what" onclick="addSmile(':what:')"></span></li>
+        <li><span class="emoji emoji-sad" onclick="addSmile(':(')"></span></li>
+        <li><span class="emoji emoji-kiss" onclick="addSmile(':kiss:')"></span></li>
+        <li><span class="emoji emoji-sun" onclick="addSmile(':sun:')"></span></li>
+        <li><span class="emoji emoji-cloud" onclick="addSmile(':cloud:')"></span></li>
+        <li><span class="emoji emoji-rain" onclick="addSmile(':rain:')"></span></li>
+        <li><span class="emoji emoji-coffee" onclick="addSmile(':coffee:')"></span></li>
+        <li><span class="emoji emoji-balloon" onclick="addSmile(':balloon:')"></span></li>
+        <li><span class="emoji emoji-salute" onclick="addSmile(':salute:')"></span></li>
+        <li><span class="emoji emoji-cow" onclick="addSmile(':cow:')"></span></li>
+        <li><span class="emoji emoji-up" onclick="addSmile(':up:')"></span></li>
+        <li><span class="emoji emoji-down" onclick="addSmile(':down:')"></span></li>
+        <li><span class="emoji emoji-devil" onclick="addSmile(':devil:')"></span></li>
+        <li><span class="emoji emoji-angel" onclick="addSmile(':angel:')"></span></li>
+    </ul>
+</div>
+<div class="user-list-wrap">
+    <ul class="user-list">
+    </ul>
+    <span class="mute">ignore</span>
+    <input type="button" id="saveIgnore" value="SAVE">
+</div>
+<div class="settings-wrap">
+    <div class="myColorList chat-colors">
+        <span class="settings_lbl_color" data-rel="my">My:</span>
+        <a style="background-color:#008000;" href="#" class="chat-colors-swatch"></a>
+        <a style="background-color:#B22222;" href="#" class="chat-colors-swatch"></a>
+        <a style="background-color:#9ACD32;" href="#" class="chat-colors-swatch"></a>
+        <a style="background-color:#FF4500;" href="#" class="chat-colors-swatch"></a>
+        <a style="background-color:#DAA520;" href="#" class="chat-colors-swatch"></a>
+        <a style="background-color:#D2691E;" href="#" class="chat-colors-swatch"></a>
+        <a style="background-color:#1E90FF;" href="#" class="chat-colors-swatch"></a>
+        <a style="background-color:#8A2BE2;" href="#" class="chat-colors-swatch"></a>
+    </div>
+    <div class="meColorList chat-colors">
+        <span class="settings_lbl_color" data-rel="me">2Me:</span>
+        <a style="background-color:#008000;" href="#" class="chat-colors-swatch"></a>
+        <a style="background-color:#B22222;" href="#" class="chat-colors-swatch"></a>
+        <a style="background-color:#9ACD32;" href="#" class="chat-colors-swatch"></a>
+        <a style="background-color:#FF4500;" href="#" class="chat-colors-swatch"></a>
+        <a style="background-color:#DAA520;" href="#" class="chat-colors-swatch"></a>
+        <a style="background-color:#D2691E;" href="#" class="chat-colors-swatch"></a>
+        <a style="background-color:#1E90FF;" href="#" class="chat-colors-swatch"></a>
+        <a style="background-color:#8A2BE2;" href="#" class="chat-colors-swatch"></a>
+    </div>
+    <div class="form-item">
+        <input type="checkbox" id="settings_showTime" name="checkbox-1" class="form-checkbox">
+        <label for="settings_showTime" id="settings_showTime_lbl"></label>
+    </div>
+</div>
+<script src="{{ static_url('js/jquery-1.12.0.min.js') }}" type="text/javascript"></script>
+<script src="{{ static_url('js/jquery.mCustomScrollbar.min.js') }}" type="text/javascript"></script>
+<script src="{{ static_url('js/jquery.cookie.js') }}" type="text/javascript"></script>
+<script src="{{ static_url('js/chat.js') }}" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+redishost:
+  restart: always
+  image: avezhenya/redis
+
+chat:
+  restart: always
+  build: .
+  links:
+    - redishost:redishost
+  ports:
+    - "8889:8889"

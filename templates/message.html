@@ -1,0 +1,6 @@
+<li class="chat-line" id='m{{ message["id"] }}'>
+    <span class="time" data-rel='{% module linkify(message["time"]) %}'></span>
+    <span class="from">{% module linkify(message["user"]) %}</span>
+    <span class="colon">:</span>
+    <span class="message">{% raw message["body"] %}</span>
+</li>

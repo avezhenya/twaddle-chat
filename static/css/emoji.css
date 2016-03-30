@@ -1,0 +1,45 @@
+.emoji { background: url("../img/emoji.png") top left no-repeat; width: 20px; height: 20px; display: -moz-inline-stack; display: inline-block; vertical-align: bottom; zoom: 1; *display: inline; cursor: pointer}
+
+.emoji-CN { background-position: -0px 0px; }
+.emoji-DE { background-position: -0px -20px; }
+.emoji-ES { background-position: -0px -40px; }
+.emoji-FR { background-position: -0px -60px; }
+.emoji-GB { background-position: -0px -80px; }
+.emoji-IT { background-position: -0px -100px; }
+.emoji-JP { background-position: -0px -120px; }
+.emoji-KR { background-position: -0px -140px; }
+.emoji-RU { background-position: -0px -160px; }
+.emoji-US { background-position: -0px -180px; }
+
+.emoji-balloon { background-position: -0px -200px; }
+.emoji-salute  { background-position: -0px -220px; }
+.emoji-ball { background-position: -0px -240px; }
+.emoji-cow { background-position: -0px -260px; }
+.emoji-up { background-position: -0px -280px; }
+.emoji-down { background-position: -0px -300px; }
+.emoji-shit { background-position: -0px -320px; }
+
+.emoji-devil { background-position: -0px -340px; }
+.emoji-angel { background-position: -0px -360px; }
+.emoji-smile { background-position: -0px -380px; }
+.emoji-smile2 { background-position: -0px -400px; }
+.emoji-smile3 { background-position: -0px -420px; }
+.emoji-tongue { background-position: -0px -440px; }
+.emoji-wink { background-position: -0px -460px; }
+.emoji-love { background-position: -0px -480px; }
+.emoji-dude { background-position: -0px -500px; }
+.emoji-smile81 { background-position: -0px -520px; }
+.emoji-smile82 { background-position: -0px -540px; }
+.emoji-smile83 { background-position: -0px -560px; }
+.emoji-angry { background-position: -0px -580px; }
+.emoji-cry { background-position: -0px -600px; }
+.emoji-TT { background-position: -0px -620px; }
+.emoji-surprise { background-position: -0px -640px; }
+.emoji-what { background-position: -0px -660px; }
+.emoji-sad { background-position: -0px -680px; }
+.emoji-mm { background-position: -0px -700px; }
+.emoji-kiss { background-position: -0px -720px; }
+.emoji-sun { background-position: -0px -740px; }
+.emoji-cloud { background-position: -0px -760px; }
+.emoji-rain { background-position: -0px -780px; }
+.emoji-coffee { background-position: -0px -800px; }
