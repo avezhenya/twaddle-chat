@@ -8,6 +8,9 @@
 * Settings
 * Easy to use
 
+### Demo
+![Demo](static/img/demo.gif)
+
 ### Install
 ```
 docker build -t twaddle-chat .
