@@ -41,3 +41,7 @@ If you want automatic deploy you may use **docker-compose** and **makefile**.
 Copyright © 2016 avezhenya
 
 Distributed under the Eclipse Public License either version 1.0 or any later version.
+
+### Authors
+![@avezhenya](https://github.com/avezhenya)
+![@xmmx](https://github.com/xmmx)
