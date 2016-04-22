@@ -9,7 +9,7 @@
 * Easy to use
 
 ### Demo
-![Demo](static/img/demo.gif)
+![Demo](/twaddle-chat/static/img/demo.gif)
 
 ### Install
 ```

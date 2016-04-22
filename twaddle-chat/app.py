@@ -1,20 +1,20 @@
 #!/usr/bin/python
 #  -*- coding: utf-8 -*-
-from tornado.options import define, options
-from tornado.ioloop import PeriodicCallback
-from tornado.escape import json_encode, json_decode, to_basestring
-from config import BaseConfig as Config
-from utils import spam_links, replace_smiles
 import logging
+import os
+import time
+import uuid
+
+import redis
 import tornado.ioloop
 import tornado.options
 import tornado.web
 import tornado.websocket
-import redis
-import uuid
-import time
-import os
-
+from config import BaseConfig as Config
+from tornado.escape import json_encode, json_decode, to_basestring
+from tornado.ioloop import PeriodicCallback
+from tornado.options import define, options
+from utils import spam_links, replace_smiles
 
 r = redis.StrictRedis(host=Config.HOST, port=Config.PORT, db=0)
 define("port", default=8889, help="run on the given port", type=int)

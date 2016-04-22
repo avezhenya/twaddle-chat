@@ -1,8 +1,8 @@
 #!usr/bin/python
 # -*- coding: utf-8 -*-
-from config import BaseConfig
 import re
 
+from config import BaseConfig
 
 smiles = BaseConfig.SMILES
 pattern_1 = re.compile(BaseConfig.PATTERN_2, re.U | re.I)

@@ -7,4 +7,4 @@ MAINTAINER avezhenya
 
 ENV PROD True
 EXPOSE 8889
-CMD [ "python", "./app.py" ]
+CMD [ "python", "./twaddle-chat/app.py" ]
