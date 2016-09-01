@@ -27,7 +27,7 @@ class Application(tornado.web.Application):
             (r"/ignore", IgnoreHandler),
             (r"/chatsocket", ChatSocketHandler),
             (r'/(favicon\.ico)', tornado.web.StaticFileHandler,
-             {'path': '/static/favicon.ico'})
+             {'path': '/static/img/favicon.ico'})
         ]
         settings = dict(
             cookie_secret=Config.SECRET,

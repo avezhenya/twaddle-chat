@@ -1,13 +1,4 @@
-.PHONY: deploy_dev
-
-deploy_dev:
-	ssh chat.dev "cd /home/twaddle-chat/; \
-	              git pull origin v2; \
-	              docker-compose stop; \
-	              docker-compose rm; \
-	              docker-compose build; \
-	              docker-compose up -d;"
-	@echo "Develop is done!"
+.PHONY: deploy_prod
 
 deploy_prod:
 	ssh chat.prod "cd /home/twaddle-chat/; \
