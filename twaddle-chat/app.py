@@ -4,19 +4,23 @@ import logging
 import os
 import time
 import uuid
+import asyncio
 
-import redis
+import aredis
 import tornado.ioloop
 import tornado.options
 import tornado.web
 import tornado.websocket
-from config import BaseConfig as Config
 from tornado.escape import json_encode, json_decode, to_basestring
 from tornado.ioloop import PeriodicCallback
 from tornado.options import define, options
+from tornado.platform.asyncio import AsyncIOMainLoop
+
+from config import BaseConfig as Config
 from utils import spam_links, replace_smiles
 
-r = redis.StrictRedis(host=Config.HOST, port=Config.PORT, db=0)
+
+r = aredis.StrictRedis(host=Config.HOST, port=Config.PORT, db=0)
 define("port", default=8889, help="run on the given port", type=int)
 
 
@@ -42,7 +46,7 @@ class Application(tornado.web.Application):
 
 class MainHandler(tornado.web.RequestHandler):
 
-    def get(self):
+    async def get(self):
         """ Return all messages for room """
         user = self.get_argument('u', 'NoName')
         if user == "":
@@ -51,9 +55,9 @@ class MainHandler(tornado.web.RequestHandler):
         if user in Config.USERNAME_IGNORE_LIST:
             user = 'user-{}'.format(str(uuid.uuid4())[:7])
         if user and room:
-            keys = r.lrange(room + ':msg', 0, -1)
+            keys = await r.lrange(room + ':msg', 0, -1)
             if len(keys) != 0:
-                messages = r.mget(keys)
+                messages = await r.mget(keys)
                 messages.reverse()
                 messages = [json_decode(i) for i in messages if i is not None]
             else:
@@ -63,7 +67,7 @@ class MainHandler(tornado.web.RequestHandler):
         else:
             self.send_error(404, reason='Incorrect params of query')
 
-    def post(self):
+    async def post(self):
         """ Send system message in room, for attention users """
         room = self.get_argument('r', False)
         user = self.get_argument('u', False)
@@ -86,7 +90,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 class IgnoreHandler(tornado.web.RequestHandler):
 
-    def get(self):
+    async def get(self):
         """ Return object with lists all users and ignore """
         room = self.get_argument('room', False)
         user = self.get_argument('user', False)
@@ -97,27 +101,28 @@ class IgnoreHandler(tornado.web.RequestHandler):
             for usr in ChatSocketHandler.waiters[room + ':clients']:
                 if usr[1] != '' and usr[1] not in result['users_list']:
                     result['users_list'].append(usr[1])
-        if r.exists(user + ':ignore'):
-            tmp = [i.decode("utf-8") for i in r.lrange(user + ':ignore', 0, -1)]
+        if await r.exists(user + ':ignore'):
+            tmp = [i.decode("utf-8") for i in await r.lrange(user + ':ignore', 0, -1)]
             result['ignore'] += tmp
         self.write(result)
 
-    def post(self):
+    async def post(self):
         """ Add any unwelcome users in personal ignore list for user """
         req = {'user': self.get_argument('user', False),
                'ignore': json_decode(self.get_argument('ignore', False))}
         if not req['user'] or req['ignore'] == False:
             return self.write({'status': False})
+        user_ignore = req['user'] + ':ignore'
         if len(req['ignore']):
-            if r.exists(req['user'] + ':ignore'):
-                r.delete(req['user'] + ':ignore')
-                r.lpush(req['user'] + ':ignore', *req['ignore'])
-                r.expire(req['user'] + ':ignore', Config.USER_BAN_LIST_TIMEOUT)
+            if await r.exists(user_ignore):
+                await r.delete(user_ignore)
+                await r.lpush(user_ignore, *req['ignore'])
+                await r.expire(user_ignore, Config.USER_BAN_LIST_TIMEOUT)
             else:
-                r.lpush(req['user'] + ':ignore', *req['ignore'])
-                r.expire(req['user'] + ':ignore', Config.USER_BAN_LIST_TIMEOUT)
-        elif r.exists(req['user'] + ':ignore'):
-            r.delete(req['user'] + ':ignore')
+                await r.lpush(user_ignore, *req['ignore'])
+                await r.expire(user_ignore, Config.USER_BAN_LIST_TIMEOUT)
+        elif await r.exists(user_ignore):
+            await r.delete(user_ignore)
         return self.write({'status': True})
 
 
@@ -157,7 +162,6 @@ class ChatSocketHandler(tornado.websocket.WebSocketHandler):
             # TODO(avezhenya) If empty set, need to delete it or expire 3600 sec
         else:
             self.send_error(404, reason='Incorrect params of query')
-        # print(ChatSocketHandler.waiters)
 
     @classmethod
     def send_updates(cls, chat, room):
@@ -214,7 +218,7 @@ class ChatSocketHandler(tornado.websocket.WebSocketHandler):
             self.render_string('message.html', message=chat)
         )
         # put it in cache and give to listeners
-        ChatSocketHandler.update_cache(chat, room)
+        ChatSocketHandler.update_cache(chat, room)  # NEED TO BE AWAIT https://github.com/tornadoweb/tornado/issues/1650
         ChatSocketHandler.send_updates(chat, room)
 
     def on_pong(self, data):
@@ -230,11 +234,12 @@ class ChatSocketHandler(tornado.websocket.WebSocketHandler):
 def main():
     tornado.options.parse_command_line()
     logging.info("Server started")  # TODO(avezhenya) Add log file
+    AsyncIOMainLoop().install()
+    loop = asyncio.get_event_loop()
     app = Application()
     app.listen(options.port)
     PeriodicCallback(ChatSocketHandler.pinging, 50000).start()
-    tornado.ioloop.IOLoop.instance().start()
-
+    loop.run_forever()
 
 if __name__ == '__main__':
     main()
