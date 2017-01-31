@@ -7,6 +7,7 @@ import uuid
 import asyncio
 
 import aredis
+import redis
 import tornado.ioloop
 import tornado.options
 import tornado.web
@@ -21,6 +22,7 @@ from utils import spam_links, replace_smiles
 
 
 r = aredis.StrictRedis(host=Config.HOST, port=Config.PORT, db=0)
+redis_sync = redis.StrictRedis(host=Config.HOST, port=Config.PORT, db=0)
 define("port", default=8889, help="run on the given port", type=int)
 
 
@@ -186,10 +188,10 @@ class ChatSocketHandler(tornado.websocket.WebSocketHandler):
         :param chat:
         """
         key = '{}:{}'.format(room, chat['id'][:7])
-        r.setex(key, Config.ROOM_CLEAR_TIMEOUT, json_encode(chat))
-        r.lpush(room + ':msg', key)  # TODO(avezhenya) Need to merge in Pipeline
-        if r.llen(room + ':msg') > Config.CACHE_SIZE:  # Meybe it's not need
-            r.ltrim(room + ':msg', 0, Config.CACHE_SIZE)
+        redis_sync.setex(key, Config.ROOM_CLEAR_TIMEOUT, json_encode(chat))
+        redis_sync.lpush(room + ':msg', key)  # TODO(avezhenya) Need to merge in Pipeline
+        if redis_sync.llen(room + ':msg') > Config.CACHE_SIZE:  # Meybe it's not need
+            redis_sync.ltrim(room + ':msg', 0, Config.CACHE_SIZE)
 
     @classmethod
     def pinging(cls):
@@ -218,7 +220,7 @@ class ChatSocketHandler(tornado.websocket.WebSocketHandler):
             self.render_string('message.html', message=chat)
         )
         # put it in cache and give to listeners
-        ChatSocketHandler.update_cache(chat, room)  # NEED TO BE AWAIT https://github.com/tornadoweb/tornado/issues/1650
+        ChatSocketHandler.update_cache(chat, room)
         ChatSocketHandler.send_updates(chat, room)
 
     def on_pong(self, data):
